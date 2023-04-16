@@ -3,6 +3,9 @@
 
 # In[2]:
 import pandas as pd
+from PIL import Image
+import requests
+from io import BytesIO
 
 # **Acá estoy usando el excel que me mandaste pero elimine varias columnas, solo me quede con las de tipo
 # CAVaronnuevo017 que son 27, Año, Departamento, COD_proy y Total_BEN**
@@ -22,9 +25,13 @@ df['COD_proy']= df['COD_proy'].fillna("Sin Código")
 # In[6]:
 
 
-#El path de la imagen del logo de OIM
-image_path = 'assets/oim.png'
-
+#Imagen del logo de OIM
+url = "https://media.licdn.com/dms/image/C4D1BAQFoktnuJa4h_A/company-background_10000/0/1627417964848?e=1682013600&v=beta&t=4moGFRZnX14qfNpATq9qXoVJLqIJDRjy2Ho6eEV07uI"
+response = requests.get(url)
+image = Image.open(BytesIO(response.content))
+new_width = 402
+new_height = 147
+resized_image = image.resize((new_width, new_height))
 
 # In[7]:
 
@@ -203,7 +210,7 @@ app.layout = html.Div([
         ),
         html.Div([
             #Acá es donde pongo la iamgen del logo
-            html.Img(src=image_path)
+            html.Img(src=resized_image)
         ], className='four columns',
         ),
     ], className='twelve columns', style={'margin': '10px auto', 'border': 'solid', 'border-color': '#146c9c'}),
