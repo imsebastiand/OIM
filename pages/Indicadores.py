@@ -115,6 +115,7 @@ layout = html.Div([
     ], className='twelve columns', style={'backgroundColor': "#111111"}),
 
     html.Br(),
+    html.Br(),
     html.Div([
         html.Div([
             html.Label('Selecciona el Año'),
@@ -138,13 +139,19 @@ layout = html.Div([
         ], className='four columns', ),
         html.Div([
             html.Label('Selecciona al Responsable'),
-            dcc.Dropdown(
-                id='ResponsableDropddown',
-                options=[{'label': code, 'value': code} for code in sorted(dfIND['Responsable'].unique())],
-                value=sorted(dfIND['Responsable'].unique())[0],
-                clearable=False,
-                placeholder="Selecciona...",
-            ),
+            #dcc.Dropdown(
+            #    id='ResponsableDropddown',
+            #    options=[{'label': code, 'value': code} for code in sorted(dfIND['Responsable'].unique())],
+            #    value=sorted(dfIND['Responsable'].unique())[0],
+            #    clearable=False,
+            #    placeholder="Selecciona...",
+            #),
+            dcc.Checklist(
+                    id='ResponsableChecklist',
+                    options=[{'label': code, 'value': code} for code in sorted(dfIND['Responsable'].unique())],
+                    value=list(dfIND['Responsable'].unique()),
+                    style ={'height': '150px','overflowY': 'scroll'}
+                ),
         ], className='four columns', ),
 
     ], className='twelve columns', style={'backgroundColor': "#111111"}),
@@ -221,7 +228,7 @@ def update_checklist_options(indicador):
 
 
 @callback(
-    Output('ResponsableDropddown', 'options'),
+    Output('ResponsableChecklist', 'options'),
     [Input('IndicadorDropddown', 'value')]
 )
 def update_checklist_options(indicador):
@@ -240,10 +247,10 @@ def update_checklist_options(indicador):
     Input('IndicadorDropddown', 'value'),
     Input('AñoDropddown', 'value'),
     Input('MesDropddown', 'value'),
-    Input('ResponsableDropddown', 'value'),
+    Input('ResponsableChecklist', 'value'),
 )
 def update_pie(code, indi, year, month, res):
-    filtered_df = df_categoriasIND[(df_categoriasIND['COD_proy']==code) & (df_categoriasIND['Indicador']==indi) & (df_categoriasIND['Año']==year) & (df_categoriasIND['Mes']==month) & (df_categoriasIND['Responsable']==res)]
+    filtered_df = df_categoriasIND[(df_categoriasIND['COD_proy']==code) & (df_categoriasIND['Indicador']==indi) & (df_categoriasIND['Año']==year) & (df_categoriasIND['Mes']==month) & (df_categoriasIND['Responsable'].isin(res))]
     fig = px.pie(filtered_df, values='Cantidad', names='Categoría', hole=.3 ,color_discrete_sequence=px.colors.sequential.Teal)
     fig.update_traces(textinfo='percent+label+value', textposition='inside', insidetextfont=dict(color='black'),
                       hoverinfo='percent+label+value')
@@ -257,10 +264,10 @@ def update_pie(code, indi, year, month, res):
     Input('IndicadorDropddown', 'value'),
     Input('AñoDropddown', 'value'),
     Input('MesDropddown', 'value'),
-    Input('ResponsableDropddown', 'value'),
+    Input('ResponsableChecklist', 'value'),
 )
 def update_pie(code, indi, year, month, res):
-    filtered_df = df_generoIND[(df_generoIND['COD_proy']==code) & (df_generoIND['Indicador']==indi) & (df_generoIND['Año']==year) & (df_generoIND['Mes']==month) & (df_generoIND['Responsable']==res)]
+    filtered_df = df_generoIND[(df_generoIND['COD_proy']==code) & (df_generoIND['Indicador']==indi) & (df_generoIND['Año']==year) & (df_generoIND['Mes']==month) & (df_generoIND['Responsable'].isin(res))]
     fig = px.pie(filtered_df, values='Cantidad', names='Género', hole=.2,color_discrete_sequence=px.colors.sequential.Teal)
     fig.update_traces(textinfo='percent+label+value', textposition='inside', insidetextfont=dict(color='black'),
                       hoverinfo='percent+label+value')
@@ -275,10 +282,10 @@ def update_pie(code, indi, year, month, res):
     Input('IndicadorDropddown', 'value'),
     Input('AñoDropddown', 'value'),
     Input('MesDropddown', 'value'),
-    Input('ResponsableDropddown', 'value'),
+    Input('ResponsableChecklist', 'value'),
 )
 def update_histogram(code, indi, year, month, res):
-    filtered_df = dfIND[(dfIND['COD_proy']==code) & (dfIND['Indicador']==indi) & (dfIND['Año']==year) & (dfIND['Mes']==month) & (dfIND['Responsable']==res)]
+    filtered_df = dfIND[(dfIND['COD_proy']==code) & (dfIND['Indicador']==indi) & (dfIND['Año']==year) & (dfIND['Mes']==month) & (dfIND['Responsable'].isin(res))]
     fig = px.histogram(filtered_df, x='Total_BEN', y='Departamento', orientation='h', color_discrete_sequence=['skyblue'], text_auto=True)
     fig.update_layout(template='plotly_dark')
     return fig
@@ -291,10 +298,10 @@ def update_histogram(code, indi, year, month, res):
     Input('IndicadorDropddown', 'value'),
     Input('AñoDropddown', 'value'),
     Input('MesDropddown', 'value'),
-    Input('ResponsableDropddown', 'value'),
+    Input('ResponsableChecklist', 'value'),
 )
 def update_histogram(code, indi, year, month, res):
-    filtered_df = df_CA_IND[(df_CA_IND['COD_proy']==code) & (df_CA_IND['Indicador']==indi) & (df_CA_IND['Año']==year) & (df_CA_IND['Mes']==month) & (df_CA_IND['Responsable']==res)]
+    filtered_df = df_CA_IND[(df_CA_IND['COD_proy']==code) & (df_CA_IND['Indicador']==indi) & (df_CA_IND['Año']==year) & (df_CA_IND['Mes']==month) & (df_CA_IND['Responsable'].isin(res))]
     fig = px.histogram(filtered_df, x='Cantidad', y='Comunidad de Acogida', orientation='h', color_discrete_sequence=['#146c9c'], text_auto=True)
     fig.update_layout(template='plotly_dark')
     return fig
@@ -306,10 +313,10 @@ def update_histogram(code, indi, year, month, res):
     Input('IndicadorDropddown', 'value'),
     Input('AñoDropddown', 'value'),
     Input('MesDropddown', 'value'),
-    Input('ResponsableDropddown', 'value'),
+    Input('ResponsableChecklist', 'value'),
 )
 def update_histogram(code, indi, year, month, res):
-    filtered_df = df_PER_IND[(df_PER_IND['COD_proy']==code) & (df_PER_IND['Indicador']==indi) & (df_PER_IND['Año']==year) & (df_PER_IND['Mes']==month) & (df_PER_IND['Responsable']==res)]
+    filtered_df = df_PER_IND[(df_PER_IND['COD_proy']==code) & (df_PER_IND['Indicador']==indi) & (df_PER_IND['Año']==year) & (df_PER_IND['Mes']==month) & (df_PER_IND['Responsable'].isin(res))]
     fig = px.histogram(filtered_df, x='Cantidad', y='Permanencia', orientation='h', color_discrete_sequence=['#1d8fb6'], text_auto=True)
     fig.update_layout(template='plotly_dark')
     return fig
@@ -321,10 +328,10 @@ def update_histogram(code, indi, year, month, res):
     Input('IndicadorDropddown', 'value'),
     Input('AñoDropddown', 'value'),
     Input('MesDropddown', 'value'),
-    Input('ResponsableDropddown', 'value'),
+    Input('ResponsableChecklist', 'value'),
 )
 def update_histogram(code, indi, year, month, res):
-    filtered_df = df_TRA_IND[(df_TRA_IND['COD_proy']==code) & (df_TRA_IND['Indicador']==indi) & (df_TRA_IND['Año']==year) & (df_TRA_IND['Mes']==month) & (df_TRA_IND['Responsable']==res)]
+    filtered_df = df_TRA_IND[(df_TRA_IND['COD_proy']==code) & (df_TRA_IND['Indicador']==indi) & (df_TRA_IND['Año']==year) & (df_TRA_IND['Mes']==month) & (df_TRA_IND['Responsable'].isin(res))]
     fig = px.histogram(filtered_df, x='Cantidad', y='Tránsito', orientation='h', color_discrete_sequence=['skyblue'], text_auto=True)
     fig.update_layout(template='plotly_dark')
     return fig
@@ -335,10 +342,10 @@ def update_histogram(code, indi, year, month, res):
         Input('IndicadorDropddown', 'value'),
         Input('AñoDropddown', 'value'),
         Input('MesDropddown', 'value'),
-        Input('ResponsableDropddown', 'value'),
+        Input('ResponsableChecklist', 'value'),
 )
 def update_total(code, indi, year, month, res):
-        filtered_df = dfIND[(dfIND['COD_proy']== code) & (dfIND['Indicador'] == indi) & (dfIND['Año']==year) & (dfIND['Mes']==month) & (dfIND['Responsable']==res)]
+        filtered_df = dfIND[(dfIND['COD_proy']== code) & (dfIND['Indicador'] == indi) & (dfIND['Año']==year) & (dfIND['Mes']==month) & (dfIND['Responsable'].isin(res))]
         sumatotal = filtered_df['Cantidad_py'].sum()
         return f"{sumatotal}"
 
